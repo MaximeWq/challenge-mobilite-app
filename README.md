@@ -2,14 +2,14 @@
 
 Application web de suivi d'activités de mobilité douce pour encourager les modes de transport écologiques en entreprise.
 
-## 🚀 Technologies utilisées
+## Technologies utilisées
 
 - **Backend** : Laravel 11 (API REST)
 - **Base de données** : MySQL
 - **Authentification** : Laravel Sanctum
 - **Frontend** : Vue.js (en cours de développement)
 
-## 📋 Fonctionnalités
+## Fonctionnalités
 
 ### Authentification
 - Connexion/inscription des utilisateurs
@@ -28,7 +28,7 @@ Application web de suivi d'activités de mobilité douce pour encourager les mod
 - Classement par équipe
 - Export CSV des données
 
-## 🛠 Installation
+## Installation
 
 ### Prérequis
 - PHP 8.2+
@@ -59,9 +59,9 @@ Modifier le fichier `.env` :
 ```env
 DB_CONNECTION=mysql
 DB_HOST=127.0.0.1
-DB_PORT=3306
+DB_PORT=
 DB_DATABASE=challenge_mobilite
-DB_USERNAME=root
+DB_USERNAME=
 DB_PASSWORD=
 ```
 
@@ -93,7 +93,7 @@ npm install
 npm run dev
 ```
 
-## 📊 Données de test
+## Données de test
 
 L'application inclut des données de démonstration :
 
@@ -102,7 +102,7 @@ L'application inclut des données de démonstration :
 - **1 administrateur** : admin@demo.com / admin1234
 - **Activités variées** sur les 30 derniers jours
 
-## 🔌 API Documentation
+## API Documentation
 
 ### Base URL
 ```
@@ -178,13 +178,13 @@ curl -X POST http://localhost:8000/api/activities \
 - Un utilisateur a plusieurs activités
 - Une activité appartient à un utilisateur
 
-## 🧪 Tests
+## Tests
 
 ```bash
 php artisan test
 ```
 
-## 📝 Règles métier
+## Règles métier
 
 1. **Une seule activité par jour par utilisateur**
 2. **Impossible de modifier une activité des jours précédents**
@@ -192,7 +192,7 @@ php artisan test
 4. **Validation des types** : 'velo' ou 'marche_course'
 5. **Droits d'accès** : utilisateurs ne peuvent voir/modifier que leurs activités
 
-## 🚀 Déploiement
+##  Déploiement
 
 ### Production
 1. Configurer les variables d'environnement
@@ -200,10 +200,3 @@ php artisan test
 3. Configurer la base de données de production
 4. Déployer sur un serveur web (Heroku, DigitalOcean, etc.)
 
-## 📄 Licence
-
-Ce projet est développé dans le cadre d'un challenge technique.
-
-## 👥 Auteur
-
-Développé avec Laravel 11 et Vue.js. 
