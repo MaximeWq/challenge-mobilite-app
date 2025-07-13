@@ -33,15 +33,15 @@
         <div class="stats-grid">
           <div class="stat-card">
             <h3>Total participants</h3>
-            <p class="stat-value">{{ generalStats.total_participants }}</p>
+            <p class="stat-value">{{ generalStats.total_users }}</p>
           </div>
           <div class="stat-card">
             <h3>Total kilomètres</h3>
-            <p class="stat-value">{{ generalStats.total_km }} km</p>
+            <p class="stat-value">{{ generalStats.total_distance_km }} km</p>
           </div>
           <div class="stat-card">
             <h3>Moyenne par participant</h3>
-            <p class="stat-value">{{ generalStats.average_per_user }} km</p>
+            <p class="stat-value">{{ generalStats.total_users > 0 ? (generalStats.total_distance_km / generalStats.total_users).toFixed(2) : 0 }} km</p>
           </div>
           <div class="stat-card">
             <h3>Total activités</h3>
@@ -70,12 +70,12 @@
           >
             <div class="rank">{{ index + 1 }}</div>
             <div class="user-info">
-              <div class="user-name">{{ user.name }}</div>
-              <div class="user-team">{{ user.team_name }}</div>
+              <div class="user-name">{{ user.nom }}</div>
+              <div class="user-team">{{ user.email }}</div>
             </div>
             <div class="user-stats">
-              <div class="total-km">{{ user.total_km }} km</div>
-              <div class="activities-count">{{ user.activities_count }} activités</div>
+              <div class="total-km">{{ user.total_distance }} km</div>
+              <div class="activities-count">{{ user.total_activities }} activités</div>
             </div>
           </div>
         </div>
@@ -99,7 +99,7 @@
               <div class="team-description">{{ team.description }}</div>
             </div>
             <div class="team-stats">
-              <div class="total-km">{{ team.total_km }} km</div>
+              <div class="total-km">{{ team.total_distance }} km</div>
               <div class="average-km">{{ team.average_km }} km/membre</div>
               <div class="members-count">{{ team.members_count }} membres</div>
             </div>

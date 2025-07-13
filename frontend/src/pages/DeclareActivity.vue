@@ -19,13 +19,13 @@
         <select id="type" v-model="form.type" required>
           <option value="">Sélectionner un type</option>
           <option value="velo">Vélo</option>
-          <option value="marche">Marche/Course</option>
+          <option value="marche_course">Marche/Course</option>
         </select>
       </div>
 
       <div class="form-group">
         <label v-if="form.type === 'velo'" for="distance">Distance (km)</label>
-        <label v-else-if="form.type === 'marche'" for="steps">Nombre de pas</label>
+        <label v-else-if="form.type === 'marche_course'" for="steps">Nombre de pas</label>
         <input 
           v-if="form.type === 'velo'"
           id="distance"
@@ -37,7 +37,7 @@
           required
         />
         <input 
-          v-else-if="form.type === 'marche'"
+          v-else-if="form.type === 'marche_course'"
           id="steps"
           v-model="form.steps" 
           type="number" 
@@ -47,7 +47,7 @@
         />
       </div>
 
-      <div v-if="form.type === 'marche' && form.steps" class="conversion-info">
+      <div v-if="form.type === 'marche_course' && form.steps" class="conversion-info">
         <p>Conversion : {{ form.steps }} pas = {{ (form.steps / 1500).toFixed(2) }} km</p>
       </div>
 
@@ -101,7 +101,7 @@ const submitActivity = async () => {
       date: form.value.date,
       type: form.value.type,
       distance_km: form.value.type === 'velo' ? parseFloat(form.value.distance) : null,
-      steps: form.value.type === 'marche' ? parseInt(form.value.steps) : null
+      pas: form.value.type === 'marche_course' ? parseInt(form.value.steps) : null
     };
 
     const response = await api.post('/activities', activityData);

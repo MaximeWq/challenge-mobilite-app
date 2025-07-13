@@ -41,9 +41,9 @@ const loadDashboardData = async () => {
     const response = await api.get('/stats/personal');
     if (response.data.status === 'success') {
       const data = response.data.data;
-      totalKm.value = data.total_km || 0;
-      averageDaily.value = data.average_daily || 0;
-      ranking.value = data.ranking || '-';
+      totalKm.value = data.total_distance_km || 0;
+      averageDaily.value = data.daily_average_km || 0;
+      ranking.value = data.ranking?.general || '-';
     }
   } catch (error) {
     console.error('Erreur lors du chargement du dashboard:', error);

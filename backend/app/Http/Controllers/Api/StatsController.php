@@ -244,16 +244,25 @@ class StatsController extends Controller
             ];
         }
 
+        // Générer le contenu CSV avec ; comme séparateur
+        $csvContent = '';
+        foreach ($csvData as $row) {
+            // Échapper les ";" et les "\n" dans les champs si besoin
+            $escapedRow = array_map(function($field) {
+                $field = str_replace('"', '""', $field); // double quote escaping
+                if (strpos($field, ';') !== false || strpos($field, '"') !== false || strpos($field, "\n") !== false) {
+                    $field = '"' . $field . '"';
+                }
+                return $field;
+            }, $row);
+            $csvContent .= implode(';', $escapedRow) . "\r\n";
+        }
+
         $filename = 'challenge_mobilite_' . Carbon::now()->format('Y-m-d') . '.csv';
-        
-        return response()->json([
-            'status' => 'success',
-            'data' => [
-                'filename' => $filename,
-                'csv_data' => $csvData,
-                'total_records' => count($csvData) - 1, // -1 pour exclure l'en-tête
-            ],
-            'meta' => null
-        ]);
+
+        // Retourner une vraie réponse CSV téléchargeable
+        return response($csvContent)
+            ->header('Content-Type', 'text/csv; charset=UTF-8')
+            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
     }
 }
