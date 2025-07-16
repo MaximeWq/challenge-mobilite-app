@@ -43,12 +43,14 @@
 import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../api';
+import { useUserStore } from '../stores/user';
 
 const email = ref('');
 const password = ref('');
 const error = ref('');
 const loading = ref(false);
 const router = useRouter();
+const userStore = useUserStore();
 
 const login = async () => {
   error.value = '';
@@ -61,7 +63,7 @@ const login = async () => {
     });
     
     if (response.data.status === 'success' && response.data.data.token) {
-      localStorage.setItem('token', response.data.data.token);
+      userStore.setUser(response.data.data.utilisateur, response.data.data.token);
       router.push('/dashboard');
     } else {
       error.value = 'Identifiants invalides';

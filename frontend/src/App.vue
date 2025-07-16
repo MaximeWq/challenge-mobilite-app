@@ -1,15 +1,16 @@
 <script setup>
 import { computed } from 'vue';
 import { useRouter } from 'vue-router';
+import { useUserStore } from './stores/user';
 
 const router = useRouter();
+const userStore = useUserStore();
 
-const isLoggedIn = computed(() => {
-  return !!localStorage.getItem('token');
-});
+const isLoggedIn = computed(() => !!userStore.token);
+const isAdmin = computed(() => userStore.user && (userStore.user.is_admin === true || userStore.user.is_admin === 1));
 
 const logout = () => {
-  localStorage.removeItem('token');
+  userStore.clearUser();
   router.push('/login');
 };
 </script>
@@ -25,6 +26,7 @@ const logout = () => {
           <router-link to="/dashboard">Dashboard</router-link>
           <router-link to="/declare">Déclarer</router-link>
           <router-link to="/stats">Classements</router-link>
+          <router-link v-if="isAdmin" to="/admin/users">Gestion utilisateurs</router-link>
           <button @click="logout" class="logout-btn">Déconnexion</button>
         </div>
       </div>

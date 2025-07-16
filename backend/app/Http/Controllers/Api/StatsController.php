@@ -179,20 +179,30 @@ class StatsController extends Controller
             ->orderBy('date')
             ->get();
 
-        // Position dans le classement général
-        $userRank = Utilisateur::leftJoin('activites', 'utilisateurs.id', '=', 'activites.utilisateur_id')
-            ->select('utilisateurs.id', DB::raw('SUM(activites.distance_km) as total_distance'))
+        // Classement général (calculé côté PHP pour gérer les égalités)
+        $allUsers = Utilisateur::leftJoin('activites', 'utilisateurs.id', '=', 'activites.utilisateur_id')
+            ->select('utilisateurs.id', DB::raw('COALESCE(SUM(activites.distance_km),0) as total_distance'))
             ->groupBy('utilisateurs.id')
-            ->having('total_distance', '>', $totalDistance)
-            ->count() + 1;
+            ->orderByDesc('total_distance')
+            ->get();
+        $userRank = 1;
+        foreach ($allUsers as $u) {
+            if ($u->id == $utilisateur->id) break;
+            if ($u->total_distance > $totalDistance) $userRank++;
+        }
 
-        // Position dans le classement de l'équipe
-        $teamRank = Utilisateur::where('equipe_id', $utilisateur->equipe_id)
+        // Classement équipe (calculé côté PHP pour gérer les égalités)
+        $teamUsers = Utilisateur::where('equipe_id', $utilisateur->equipe_id)
             ->leftJoin('activites', 'utilisateurs.id', '=', 'activites.utilisateur_id')
-            ->select('utilisateurs.id', DB::raw('SUM(activites.distance_km) as total_distance'))
+            ->select('utilisateurs.id', DB::raw('COALESCE(SUM(activites.distance_km),0) as total_distance'))
             ->groupBy('utilisateurs.id')
-            ->having('total_distance', '>', $totalDistance)
-            ->count() + 1;
+            ->orderByDesc('total_distance')
+            ->get();
+        $teamRank = 1;
+        foreach ($teamUsers as $u) {
+            if ($u->id == $utilisateur->id) break;
+            if ($u->total_distance > $totalDistance) $teamRank++;
+        }
 
         return response()->json([
             'status' => 'success',

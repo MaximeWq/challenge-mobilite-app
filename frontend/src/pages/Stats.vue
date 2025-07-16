@@ -100,7 +100,7 @@
             </div>
             <div class="team-stats">
               <div class="total-km">{{ team.total_distance }} km</div>
-              <div class="average-km">{{ team.average_km }} km/membre</div>
+              <div class="average-km">{{ team.avg_distance_per_member }} km/membre</div>
               <div class="members-count">{{ team.members_count }} membres</div>
             </div>
           </div>
