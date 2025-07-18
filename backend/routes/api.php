@@ -16,6 +16,9 @@ use App\Http\Controllers\Api\StatsController;
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 
+// Statistiques générales du challenge (publique)
+Route::get('/stats/general', [StatsController::class, 'general']);
+
 // Routes protégées (nécessitent authentification)
 Route::middleware('auth:sanctum')->group(function () {
     
