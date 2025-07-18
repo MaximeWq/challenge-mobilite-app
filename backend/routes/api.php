@@ -6,6 +6,8 @@ use App\Http\Controllers\Api\AuthController;
 use App\Http\Controllers\Api\ActivityController;
 use App\Http\Controllers\Api\StatsController;
 
+Route::get('/test', function() { return response()->json(['test' => 'ok']); });
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
