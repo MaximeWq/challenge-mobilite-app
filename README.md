@@ -182,8 +182,8 @@ php artisan test
 
 ## 8. Accès démo (exemple)
 
-- **Frontend** : https://frontend-production-xxxx.up.railway.app
-- **Backend** : https://backend-production-xxxx.up.railway.app
+- **Frontend** : https://frontend-production-f587.up.railway.app
+- **Backend** : https://backend-production-c0cb.up.railway.app
 - **Admin** : admin@demo.com / admin1234
 - **Utilisateur** : alice.martin@demo.com / password
 
