@@ -30,7 +30,9 @@
 
     <div class="chart-section">
       <h2>Évolution sur les 30 derniers jours</h2>
-      <canvas id="evolutionChart" height="80"></canvas>
+      <div class="chart-wrapper">
+        <canvas id="evolutionChart" height="80"></canvas>
+      </div>
     </div>
 
     <div class="actions">
@@ -170,6 +172,23 @@ watch(last30Days, () => {
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
   margin-bottom: 2rem;
+  overflow-x: auto;
+}
+
+.chart-wrapper {
+  width: 100%;
+  min-width: 300px;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+@media (max-width: 600px) {
+  .chart-section {
+    padding: 1rem;
+  }
+  .chart-wrapper {
+    min-width: 250px;
+  }
 }
 
 .actions {

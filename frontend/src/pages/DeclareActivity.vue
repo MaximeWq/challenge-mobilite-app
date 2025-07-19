@@ -1,8 +1,10 @@
 <template>
   <div class="declare-activity">
     <h1>Déclarer une activité</h1>
-    
-    <form @submit.prevent="submitActivity" class="activity-form">
+    <div v-if="alreadyDeclaredToday" class="already-declared-message">
+      Vous avez déjà déclaré une activité aujourd'hui. Vous pourrez en déclarer une nouvelle demain.
+    </div>
+    <form v-else @submit.prevent="submitActivity" class="activity-form">
       <div class="form-group">
         <label for="date">Date de l'activité</label>
         <input 
@@ -71,7 +73,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import api from '../api';
 
@@ -79,6 +81,7 @@ const router = useRouter();
 const loading = ref(false);
 const error = ref('');
 const success = ref('');
+const alreadyDeclaredToday = ref(false);
 
 const form = ref({
   date: '',
@@ -89,6 +92,24 @@ const form = ref({
 
 const today = computed(() => {
   return new Date().toISOString().split('T')[0];
+});
+
+// Vérifie si une activité a déjà été déclarée aujourd'hui
+const checkTodayActivity = async () => {
+  try {
+    const response = await api.get('/activities/user/me');
+    if (response.data.status === 'success') {
+      const activities = response.data.data;
+      alreadyDeclaredToday.value = activities.some(act => act.date === today.value);
+    }
+  } catch (e) {
+    // ignore
+  }
+};
+
+onMounted(() => {
+  form.value.date = today.value;
+  checkTodayActivity();
 });
 
 const submitActivity = async () => {
@@ -208,5 +229,15 @@ input, select {
   padding: 1rem;
   border-radius: 6px;
   margin-top: 1rem;
+}
+
+.already-declared-message {
+  background: #fef2f2;
+  color: #dc2626;
+  padding: 1.2rem;
+  border-radius: 8px;
+  text-align: center;
+  margin-bottom: 2rem;
+  font-weight: 500;
 }
 </style>
