@@ -174,13 +174,14 @@ php artisan test
 
 ## 7. Déploiement
 
-- **Backend** : Railway (ou autre plateforme compatible PHP/MySQL)
-- **Frontend** : Railway (Static), Netlify, Vercel, etc.
-- **Variables d'environnement** à configurer selon la plateforme
+Le backend (API Laravel + MySQL) et le frontend (Vue.js) ont été déployés sur Railway.
+- Les variables d'environnement ont été configurées sur Railway pour chaque service.
+- La base de données a été provisionnée via le plugin MySQL Railway.
+- Le frontend communique avec l'API via l'URL publique Railway.
 
 ---
 
-## 8. Accès démo (exemple)
+## 8.  URL publique et comptes utilisateur de test
 
 - **Frontend** : https://frontend-production-f587.up.railway.app
 - **Backend** : https://backend-production-c0cb.up.railway.app
