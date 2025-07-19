@@ -4,7 +4,7 @@ return [
     'paths' => ['api/*', 'sanctum/csrf-cookie', 'login', 'logout'],
     'allowed_methods' => ['*'],
     'allowed_origins' => [
-        'https://frontend-production-f587.up.railway.app/',
+        'https://frontend-production-f587.up.railway.app',
         // Ajoute ici d'autres domaines si besoin
     ],
     'allowed_origins_patterns' => [],
