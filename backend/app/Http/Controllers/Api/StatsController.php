@@ -14,7 +14,9 @@ use Illuminate\Support\Facades\DB;
 class StatsController extends Controller
 {
     /**
-     * Statistiques générales du challenge
+     * Statistiques générales du challenge.
+     * Retourne le total d'activités, de kilomètres, de pas, d'utilisateurs, d'équipes, etc.
+     * Fournit aussi les activités par type et l'évolution sur les 30 derniers jours.
      */
     public function general()
     {
@@ -26,12 +28,12 @@ class StatsController extends Controller
         $activitiesThisWeek = Activite::where('date', '>=', Carbon::now()->startOfWeek())->count();
         $activitiesThisMonth = Activite::where('date', '>=', Carbon::now()->startOfMonth())->count();
 
-        // Activités par type
+        // Statistiques par type d'activité (vélo, marche/course)
         $activitiesByType = Activite::select('type', DB::raw('COUNT(*) as count'), DB::raw('SUM(distance_km) as total_distance'))
             ->groupBy('type')
             ->get();
 
-        // Activités par jour (30 derniers jours)
+        // Statistiques d'évolution sur les 30 derniers jours
         $dailyActivities = Activite::select(
                 'date',
                 DB::raw('COUNT(*) as count'),
@@ -61,7 +63,9 @@ class StatsController extends Controller
     }
 
     /**
-     * Classement et statistiques par équipe
+     * Classement et statistiques par équipe.
+     * Retourne la liste des équipes avec total, moyenne, nombre de membres, etc.
+     * Classement par total de kilomètres parcourus.
      */
     public function teams()
     {
@@ -81,7 +85,7 @@ class StatsController extends Controller
             ->orderBy('total_distance', 'desc')
             ->get();
 
-        // Calculer la moyenne par membre pour chaque équipe
+        // Calcul de la moyenne de km par membre pour chaque équipe
         $teams = $teams->map(function ($team) {
             $team->avg_distance_per_member = $team->members_count > 0 
                 ? round($team->total_distance / $team->members_count, 2) 
@@ -101,7 +105,8 @@ class StatsController extends Controller
     }
 
     /**
-     * Classement des utilisateurs (top 10)
+     * Classement des utilisateurs (top 10).
+     * Retourne les 10 meilleurs utilisateurs selon la distance totale parcourue.
      */
     public function users()
     {
@@ -121,6 +126,7 @@ class StatsController extends Controller
             ->limit(10)
             ->get();
 
+        // Ajoute le rang et arrondit les valeurs
         $users = $users->map(function ($user, $index) {
             $user->rank = $index + 1;
             $user->total_distance = round($user->total_distance, 2);
@@ -138,7 +144,8 @@ class StatsController extends Controller
     }
 
     /**
-     * Statistiques personnelles de l'utilisateur connecté
+     * Statistiques personnelles de l'utilisateur connecté.
+     * Retourne les stats, classements, évolution, etc. pour l'utilisateur courant.
      */
     public function personal()
     {
@@ -150,7 +157,7 @@ class StatsController extends Controller
         $totalDistance = $activities->sum('distance_km');
         $totalSteps = $activities->sum('pas');
         
-        // Statistiques par type
+        // Statistiques par type d'activité pour l'utilisateur
         $veloStats = Activite::where('utilisateur_id', $utilisateur->id)
             ->where('type', 'velo')
             ->selectRaw('COUNT(*) as count, SUM(distance_km) as total_distance')
@@ -161,7 +168,7 @@ class StatsController extends Controller
             ->selectRaw('COUNT(*) as count, SUM(distance_km) as total_distance, SUM(pas) as total_steps')
             ->first();
 
-        // Moyenne quotidienne
+        // Calcul de la moyenne quotidienne
         $firstActivity = Activite::where('utilisateur_id', $utilisateur->id)
             ->orderBy('date')
             ->first();
@@ -172,14 +179,14 @@ class StatsController extends Controller
             
         $dailyAverage = $daysSinceFirst > 0 ? round($totalDistance / $daysSinceFirst, 2) : 0;
 
-        // Évolution sur 30 derniers jours
+        // Évolution sur 30 derniers jours pour l'utilisateur
         $last30Days = Activite::where('utilisateur_id', $utilisateur->id)
             ->where('date', '>=', Carbon::now()->subDays(30))
             ->select('date', 'distance_km', 'type')
             ->orderBy('date')
             ->get();
 
-        // Classement général (calculé côté PHP pour gérer les égalités)
+        // Calcul du rang général de l'utilisateur (classement général)
         $allUsers = Utilisateur::leftJoin('activites', 'utilisateurs.id', '=', 'activites.utilisateur_id')
             ->select('utilisateurs.id', DB::raw('COALESCE(SUM(activites.distance_km),0) as total_distance'))
             ->groupBy('utilisateurs.id')
@@ -191,7 +198,7 @@ class StatsController extends Controller
             if ($u->total_distance > $totalDistance) $userRank++;
         }
 
-        // Classement équipe (calculé côté PHP pour gérer les égalités)
+        // Calcul du rang dans l'équipe
         $teamUsers = Utilisateur::where('equipe_id', $utilisateur->equipe_id)
             ->leftJoin('activites', 'utilisateurs.id', '=', 'activites.utilisateur_id')
             ->select('utilisateurs.id', DB::raw('COALESCE(SUM(activites.distance_km),0) as total_distance'))
@@ -232,7 +239,8 @@ class StatsController extends Controller
     }
 
     /**
-     * Export CSV des données globales
+     * Export CSV des données globales du challenge.
+     * Génère un fichier CSV avec toutes les activités, utilisateurs et équipes.
      */
     public function export()
     {
@@ -254,10 +262,10 @@ class StatsController extends Controller
             ];
         }
 
-        // Générer le contenu CSV avec ; comme séparateur
+        // Génère le contenu CSV avec ; comme séparateur
         $csvContent = '';
         foreach ($csvData as $row) {
-            // Échapper les ";" et les "\n" dans les champs si besoin
+            // Échappe les ";" et les "\n" dans les champs si besoin
             $escapedRow = array_map(function($field) {
                 $field = str_replace('"', '""', $field); // double quote escaping
                 if (strpos($field, ';') !== false || strpos($field, '"') !== false || strpos($field, "\n") !== false) {
@@ -268,11 +276,9 @@ class StatsController extends Controller
             $csvContent .= implode(';', $escapedRow) . "\r\n";
         }
 
-        $filename = 'challenge_mobilite_' . Carbon::now()->format('Y-m-d') . '.csv';
-
-        // Retourner une vraie réponse CSV téléchargeable
-        return response($csvContent)
-            ->header('Content-Type', 'text/csv; charset=UTF-8')
-            ->header('Content-Disposition', 'attachment; filename="' . $filename . '"');
+        return response($csvContent, 200, [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="challenge-mobilite-export.csv"',
+        ]);
     }
 }

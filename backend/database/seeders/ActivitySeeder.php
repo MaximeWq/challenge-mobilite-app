@@ -9,11 +9,15 @@ use Carbon\Carbon;
 
 class ActivitySeeder extends Seeder
 {
+    /**
+     * Crée des activités de démonstration pour chaque utilisateur sur plusieurs jours.
+     */
     public function run()
     {
         $utilisateurs = Utilisateur::all();
         $types = ['velo', 'marche_course'];
 
+        // Pour chaque utilisateur, crée entre 2 et 5 activités sur des jours différents
         foreach ($utilisateurs as $utilisateur) {
             $nbActivites = rand(2, 5);
             $dates = [];
@@ -32,6 +36,7 @@ class ActivitySeeder extends Seeder
                     $pas = rand(2000, 15000);
                     $distance = round($pas / 1500, 2);
                 }
+                // Création de l'activité pour l'utilisateur
                 Activite::create([
                     'utilisateur_id' => $utilisateur->id,
                     'date' => $date,

@@ -11,6 +11,9 @@ use Illuminate\Support\Facades\Auth;
 
 class ActivityController extends Controller
 {
+    /**
+     * Liste paginée des activités avec utilisateur et équipe associés.
+     */
     public function index(Request $request)
     {
         $activites = Activite::with(['utilisateur', 'utilisateur.equipe'])
@@ -29,8 +32,15 @@ class ActivityController extends Controller
         ]);
     }
 
+    /**
+     * Enregistre une nouvelle activité pour l'utilisateur connecté.
+     * Règle métier : un utilisateur ne peut déclarer qu'une seule activité par jour.
+     * - Si une activité existe déjà pour la date donnée, retourne une erreur.
+     * - Conversion automatique des pas en km pour la marche/course.
+     */
     public function store(Request $request)
     {
+        // Validation des données reçues
         $request->validate([
             'date' => 'required|date|before_or_equal:today',
             'type' => 'required|in:velo,marche_course',
@@ -40,11 +50,13 @@ class ActivityController extends Controller
 
         $utilisateur = Auth::user();
 
+        // Vérifie si une activité existe déjà pour ce jour et cet utilisateur
         $existingActivity = Activite::where('utilisateur_id', $utilisateur->id)
             ->where('date', $request->date)
             ->first();
 
         if ($existingActivity) {
+            // Règle métier : une seule activité par jour
             return response()->json([
                 'status' => 'error',
                 'message' => 'Une activité existe déjà pour cette date',
@@ -58,17 +70,20 @@ class ActivityController extends Controller
             ], 400);
         }
 
+        // Prépare les données à enregistrer
         $data = [
             'utilisateur_id' => $utilisateur->id,
             'date' => $request->date,
             'type' => $request->type,
         ];
 
+        // Gestion du type d'activité
         if ($request->type === 'velo') {
             $data['distance_km'] = $request->distance_km;
             $data['pas'] = null;
         } else {
             $data['pas'] = $request->pas;
+            // Conversion automatique des pas en km
             $data['distance_km'] = round($request->pas / 1500, 2);
         }
 
@@ -83,10 +98,14 @@ class ActivityController extends Controller
         ], 201);
     }
 
+    /**
+     * Affiche une activité spécifique (accès restreint à l'utilisateur ou à l'admin).
+     */
     public function show($id)
     {
         $activite = Activite::with(['utilisateur', 'utilisateur.equipe'])->findOrFail($id);
 
+        // Seul l'utilisateur propriétaire ou un admin peut voir l'activité
         if ($activite->utilisateur_id !== Auth::id() && !Auth::user()->is_admin) {
             return response()->json([
                 'status' => 'error',
@@ -103,10 +122,14 @@ class ActivityController extends Controller
         ]);
     }
 
+    /**
+     * Met à jour une activité (seulement le jour même, accès restreint).
+     */
     public function update(Request $request, $id)
     {
         $activite = Activite::findOrFail($id);
 
+        // Seul l'utilisateur propriétaire ou un admin peut modifier
         if ($activite->utilisateur_id !== Auth::id() && !Auth::user()->is_admin) {
             return response()->json([
                 'status' => 'error',
@@ -114,6 +137,7 @@ class ActivityController extends Controller
             ], 403);
         }
 
+        // Impossible de modifier une activité des jours précédents
         if (!Carbon::parse($activite->date)->isToday()) {
             return response()->json([
                 'status' => 'error',
@@ -129,6 +153,7 @@ class ActivityController extends Controller
 
         $data = [];
 
+        // Mise à jour des champs selon le type
         if ($request->has('type')) {
             $data['type'] = $request->type;
         }
@@ -138,7 +163,7 @@ class ActivityController extends Controller
                 $data['distance_km'] = $request->distance_km;
                 $data['pas'] = null;
             }
-        } else {
+        
             if ($request->has('pas')) {
                 $data['pas'] = $request->pas;
                 $data['distance_km'] = round($request->pas / 1500, 2);
@@ -156,6 +181,9 @@ class ActivityController extends Controller
         ]);
     }
 
+    /**
+     * Supprime une activité (accès restreint à l'utilisateur ou à l'admin).
+     */
     public function destroy($id)
     {
         $activite = Activite::findOrFail($id);

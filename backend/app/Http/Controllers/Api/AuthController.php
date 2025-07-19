@@ -12,6 +12,9 @@ use App\Models\Equipe;
 
 class AuthController extends Controller
 {
+    /**
+     * Authentifie un utilisateur et retourne un token d'accès.
+     */
     public function login(Request $request)
     {
         $request->validate([
@@ -21,12 +24,14 @@ class AuthController extends Controller
 
         $utilisateur = Utilisateur::where('email', $request->email)->first();
 
+        // Vérifie les identifiants
         if (!$utilisateur || !Hash::check($request->password, $utilisateur->password)) {
             throw ValidationException::withMessages([
                 'email' => ['Les informations de connexion sont incorrectes.'],
             ]);
         }
 
+        // Génère un token d'API pour l'utilisateur
         $token = $utilisateur->createToken('api-token')->plainTextToken;
 
         return response()->json([
@@ -39,6 +44,9 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Inscrit un nouvel utilisateur et retourne un token d'accès.
+     */
     public function register(Request $request)
     {
         $request->validate([
@@ -67,6 +75,9 @@ class AuthController extends Controller
         ], 201);
     }
 
+    /**
+     * Retourne les informations de l'utilisateur connecté.
+     */
     public function user(Request $request)
     {
         return response()->json([
@@ -78,6 +89,9 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Déconnecte l'utilisateur (révoque tous ses tokens).
+     */
     public function logout(Request $request)
     {
         $request->user()->tokens()->delete();
@@ -91,6 +105,9 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Liste paginée de tous les utilisateurs (admin uniquement).
+     */
     public function getAllUsers(Request $request)
     {
         $utilisateurs = Utilisateur::with('equipe')->paginate(20);
@@ -107,6 +124,9 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Met à jour les informations d'un utilisateur (admin uniquement).
+     */
     public function updateUser(Request $request, $id)
     {
         $utilisateur = Utilisateur::findOrFail($id);
@@ -129,6 +149,10 @@ class AuthController extends Controller
         ]);
     }
 
+    /**
+     * Supprime un utilisateur (admin uniquement).
+     * Empêche la suppression du dernier administrateur.
+     */
     public function deleteUser($id)
     {
         $utilisateur = Utilisateur::findOrFail($id);

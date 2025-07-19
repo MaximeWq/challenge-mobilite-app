@@ -7,6 +7,9 @@ use App\Models\Equipe;
 
 class TeamSeeder extends Seeder
 {
+    /**
+     * Crée 5 équipes de démonstration avec nom et description.
+     */
     public function run()
     {
         $equipes = [
@@ -17,6 +20,7 @@ class TeamSeeder extends Seeder
             ['nom' => 'Les Baladeurs', 'description' => 'Pour le plaisir de bouger'],
         ];
 
+        // Création des équipes
         foreach ($equipes as $equipe) {
             Equipe::create($equipe);
         }
