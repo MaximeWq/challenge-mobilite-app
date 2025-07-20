@@ -1,9 +1,6 @@
 <template>
   <div class="declare-activity">
     <h1>Déclarer une activité</h1>
-    <div v-if="alreadyDeclaredToday" class="already-declared-message">
-      Vous avez déjà déclaré une activité aujourd'hui. Vous pourrez en déclarer une nouvelle demain.
-    </div>
     <form v-else @submit.prevent="submitActivity" class="activity-form">
       <div class="form-group">
         <label for="date">Date de l'activité</label>
@@ -81,7 +78,6 @@ const router = useRouter();
 const loading = ref(false);
 const error = ref('');
 const success = ref('');
-const alreadyDeclaredToday = ref(false);
 
 const form = ref({
   date: '',
@@ -94,25 +90,8 @@ const today = computed(() => {
   return new Date().toISOString().split('T')[0];
 });
 
-// Vérifie si une activité a déjà été déclarée aujourd'hui
-const checkTodayActivity = async () => {
-  try {
-    const user = JSON.parse(localStorage.getItem('user'));
-    if (user && user.id) {
-      const response = await api.get(`/activities/user/${user.id}`);
-      if (response.data.status === 'success') {
-        const activities = response.data.data;
-        alreadyDeclaredToday.value = activities.some(act => act.date === today.value);
-      }
-    }
-  } catch (e) {
-    // ignore
-  }
-};
-
 onMounted(() => {
   form.value.date = today.value;
-  checkTodayActivity();
 });
 
 const submitActivity = async () => {
@@ -235,12 +214,6 @@ input, select {
 }
 
 .already-declared-message {
-  background: #fef2f2;
-  color: #dc2626;
-  padding: 1.2rem;
-  border-radius: 8px;
-  text-align: center;
-  margin-bottom: 2rem;
-  font-weight: 500;
+  display: none;
 }
 </style>
