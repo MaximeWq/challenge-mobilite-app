@@ -97,10 +97,13 @@ const today = computed(() => {
 // Vérifie si une activité a déjà été déclarée aujourd'hui
 const checkTodayActivity = async () => {
   try {
-    const response = await api.get('/activities/user/me');
-    if (response.data.status === 'success') {
-      const activities = response.data.data;
-      alreadyDeclaredToday.value = activities.some(act => act.date === today.value);
+    const user = JSON.parse(localStorage.getItem('user'));
+    if (user && user.id) {
+      const response = await api.get(`/activities/user/${user.id}`);
+      if (response.data.status === 'success') {
+        const activities = response.data.data;
+        alreadyDeclaredToday.value = activities.some(act => act.date === today.value);
+      }
     }
   } catch (e) {
     // ignore
