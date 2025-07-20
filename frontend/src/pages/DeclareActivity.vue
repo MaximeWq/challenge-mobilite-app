@@ -1,7 +1,7 @@
 <template>
   <div class="declare-activity">
     <h1>Déclarer une activité</h1>
-    <form v-else @submit.prevent="submitActivity" class="activity-form">
+    <form @submit.prevent="submitActivity" class="activity-form">
       <div class="form-group">
         <label for="date">Date de l'activité</label>
         <input 
