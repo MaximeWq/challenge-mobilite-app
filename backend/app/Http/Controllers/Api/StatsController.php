@@ -249,11 +249,10 @@ class StatsController extends Controller
             ->get();
 
         $csvData = [];
-        $csvData[] = ['Date', 'Utilisateur', 'Équipe', 'Type', 'Distance (km)', 'Pas'];
+        $csvData[] = ['Utilisateur', 'Équipe', 'Type', 'Distance (km)', 'Pas'];
 
         foreach ($activities as $activity) {
             $csvData[] = [
-                $activity->date,
                 $activity->utilisateur->nom,
                 $activity->utilisateur->equipe->nom,
                 $activity->type === 'velo' ? 'Vélo' : 'Marche/Course',
