@@ -141,14 +141,14 @@ Application web de suivi d'activités de mobilité douce pour encourager les mod
 
 ---
 
-## 4. Choix techniques justifiés
+## 4. Justification des choix techniques
 
-- **Laravel (backend)** : framework robuste, sécurisé, adapté aux API REST, gestion native des migrations, seeders, tests, et middleware (auth, CORS, etc.).
-- **Sanctum** : gestion simple et sécurisée des tokens d'API pour SPA/mobile.
-- **Vue.js (frontend)** : framework moderne, réactif, idéal pour une SPA responsive et intuitive.
+- **Laravel (backend)** : framework robuste, sécurisé, adapté aux API REST, gestion native des migrations, seeders pour les jeux de données, tests simples, et middleware (auth, CORS, etc.).
+- **Sanctum** : gestion simple et sécurisée des tokens d'API.
+- **Vue.js (frontend)** : framework moderne, réactif.
 - **MySQL** : base relationnelle adaptée aux jointures et agrégations statistiques.
 - **Pinia** : gestion d'état moderne pour Vue 3.
-- **Chart.js** : visualisation claire des statistiques.
+- **Chart.js** : pour réaliser le graphique.
 - **Tests unitaires Laravel** : garantissent la robustesse métier (règles, sécurité, validation).
 - **Déploiement Railway** : simplicité, rapidité, gestion des variables d'environnement, logs, et base de données intégrée.
 
@@ -169,21 +169,4 @@ Lancer tous les tests unitaires et d'API :
 ```bash
 php artisan test
 ```
-
----
-
-## 7. Déploiement
-
-- **Backend** : Railway (ou autre plateforme compatible PHP/MySQL)
-- **Frontend** : Railway (Static), Netlify, Vercel, etc.
-- **Variables d'environnement** à configurer selon la plateforme
-
----
-
-## 8. Accès démo (exemple)
-
-- **Frontend** : https://frontend-production-xxxx.up.railway.app
-- **Backend** : https://backend-production-xxxx.up.railway.app
-- **Admin** : admin@demo.com / admin1234
-- **Utilisateur** : alice.martin@demo.com / password
 
